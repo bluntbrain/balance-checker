@@ -5,7 +5,7 @@ import { BalanceResponse, CacheStorage, ChainType, TokenBalance } from '../types
 // in-memory cache
 const balanceCache: CacheStorage = {};
 
-// Provider objects - reuse them to avoid recreating for each request
+// provider objects, reuse them to avoid recreating for each request
 const providers: Record<ChainType, ethers.providers.JsonRpcProvider | null> = {
   ethereum: null,
   polygon: null,
@@ -14,7 +14,7 @@ const providers: Record<ChainType, ethers.providers.JsonRpcProvider | null> = {
   bnb: null
 };
 
-// Initialize providers once
+// initialize providers once
 const getProvider = (chain: ChainType): ethers.providers.JsonRpcProvider => {
   if (!providers[chain]) {
     const apiKey = process.env.ALCHEMY_API_KEY;
