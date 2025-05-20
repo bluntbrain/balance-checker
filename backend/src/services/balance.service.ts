@@ -18,8 +18,10 @@ export const formatBalance = (balance: string): string => {
     return num.toLocaleString('en-US', { maximumFractionDigits: 4 });
   } else if (num >= 0.01) {
     return num.toFixed(5);
-  } else {
+  } else if (num > 0) {
     return num.toFixed(8);
+  } else {
+    return '0';
   }
 };
 
@@ -126,7 +128,8 @@ export const getBalances = async (address: string): Promise<BalanceResponse> => 
   // prepare response
   const response: BalanceResponse = {
     address,
-    balances: validBalances
+    balances: validBalances,
+    hasNonZeroBalances: validBalances.some(balance => parseFloat(balance.balance) > 0)
   };
   
   // cache the result
