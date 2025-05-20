@@ -4,6 +4,12 @@ Live Demo: [https://balance-checker-khaki.vercel.app/](https://balance-checker-k
 
 This app lets you check crypto balances across multiple blockchains with one Ethereum address.
 
+
+https://github.com/user-attachments/assets/c37e9fa7-0721-47af-a041-8efc3214cb20
+
+
+
+
 ## Features
 
 - Check ETH, USDC, and LINK on 5 chains at once
