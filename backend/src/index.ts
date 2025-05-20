@@ -1,6 +1,7 @@
 import express, { Request, Response } from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
+import balanceRoutes from './routes/balance.routes';
 
 // Load environment variables
 dotenv.config();
@@ -13,9 +14,7 @@ app.use(cors());
 app.use(express.json());
 
 // Routes
-app.get('/', (req: Request, res: Response) => {
-  res.status(200).json({ message: 'API is running' });
-});
+app.use(balanceRoutes);
 
 // Health check endpoint
 app.get('/health', (req: Request, res: Response) => {
