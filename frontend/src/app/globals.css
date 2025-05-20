@@ -3,6 +3,19 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  --primary: #3b82f6;
+  --primary-hover: #2563eb;
+  --secondary: #8b5cf6;
+  --card-bg: #1e293b;
+  --card-border: #334155;
+  --input-bg: #0f172a;
+  --input-border: #334155;
+  --input-focus-border: #4f46e5;
+  --success: #10b981;
+  --warning: #f59e0b;
+  --error: #ef4444;
+  --radius: 0.5rem;
+  --radius-sm: 0.25rem;
 }
 
 @theme inline {
@@ -14,8 +27,8 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: #0f172a;
+    --foreground: #f8fafc;
   }
 }
 
@@ -23,4 +36,90 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Common utility classes */
+.card {
+  @apply rounded-xl border p-4 shadow-md transition-all;
+  background: var(--card-bg);
+  border-color: var(--card-border);
+}
+
+.card:hover {
+  box-shadow: 0 0 20px rgba(79, 70, 229, 0.1);
+  border-color: rgba(79, 70, 229, 0.3);
+}
+
+.input-field {
+  @apply block w-full rounded-lg py-2.5 px-4 text-sm focus:outline-none;
+  background: var(--input-bg);
+  border: 1px solid var(--input-border);
+  transition: all 0.2s ease;
+}
+
+.input-field:focus {
+  border-color: var(--input-focus-border);
+  box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.25);
+}
+
+.token-badge {
+  @apply rounded-lg p-3 text-sm transition-all;
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.token-badge:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.chain-badge {
+  @apply rounded-full px-2.5 py-0.5 text-xs font-medium;
+  background: rgba(15, 23, 42, 0.4);
+  backdrop-filter: blur(4px);
+}
+
+.chain-ethereum { @apply bg-blue-500/20 text-blue-300; }
+.chain-polygon { @apply bg-purple-500/20 text-purple-300; }
+.chain-arbitrum { @apply bg-blue-600/20 text-blue-300; }
+.chain-base { @apply bg-blue-400/20 text-blue-200; }
+.chain-bnb { @apply bg-yellow-500/20 text-yellow-300; }
+
+/* Responsive adjustments */
+@media (max-width: 640px) {
+  .card {
+    @apply p-3;
+  }
+  
+  .token-badge {
+    @apply p-2;
+  }
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.3s ease forwards;
+}
+
+.animate-pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: .5; }
+}
+
+/* Glass morphism effect for cards */
+.glass-card {
+  background: rgba(30, 41, 59, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
 }
