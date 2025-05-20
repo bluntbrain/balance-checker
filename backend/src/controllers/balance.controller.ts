@@ -21,11 +21,34 @@ export const getBalance = async (req: Request, res: Response): Promise<void> => 
     // get balances for address
     const balances = await getBalances(address);
     
+    // Check if we got any balances
+    if (!balances.balances.length) {
+      res.status(404).json({ 
+        error: 'No balances found',
+        address,
+        balances: []
+      });
+      return;
+    }
+    
     res.status(200).json(balances);
   } catch (error) {
     console.error('Error in getBalance controller:', error);
-    res.status(500).json({ 
-      error: error instanceof Error ? error.message : 'An unknown error occurred' 
+    
+    // Provide more detailed error message
+    const errorMessage = error instanceof Error 
+      ? error.message 
+      : 'An unknown error occurred';
+      
+    const statusCode = errorMessage.includes('ALCHEMY_API_KEY') 
+      ? 500 
+      : errorMessage.includes('could not retrieve') 
+        ? 504 
+        : 500;
+        
+    res.status(statusCode).json({ 
+      error: errorMessage,
+      details: error instanceof Error && error.stack ? error.stack.split('\n')[0] : undefined
     });
   }
 }; 

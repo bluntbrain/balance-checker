@@ -5,6 +5,27 @@ import { BalanceResponse, CacheStorage, ChainType, TokenBalance } from '../types
 // in-memory cache
 const balanceCache: CacheStorage = {};
 
+// Provider objects - reuse them to avoid recreating for each request
+const providers: Record<ChainType, ethers.providers.JsonRpcProvider | null> = {
+  ethereum: null,
+  polygon: null,
+  arbitrum: null,
+  base: null,
+  bnb: null
+};
+
+// Initialize providers once
+const getProvider = (chain: ChainType): ethers.providers.JsonRpcProvider => {
+  if (!providers[chain]) {
+    const apiKey = process.env.ALCHEMY_API_KEY;
+    if (!apiKey) {
+      throw new Error('ALCHEMY_API_KEY is not set');
+    }
+    providers[chain] = new ethers.providers.JsonRpcProvider(`${RPC_URLS[chain]}${apiKey}`);
+  }
+  return providers[chain] as ethers.providers.JsonRpcProvider;
+};
+
 // check if address is valid ethereum address
 export const isValidAddress = (address: string): boolean => {
   return ethers.utils.isAddress(address);
@@ -86,50 +107,48 @@ export const getBalances = async (address: string): Promise<BalanceResponse> => 
     return cacheEntry.data;
   }
   
-  const apiKey = process.env.ALCHEMY_API_KEY;
-  if (!apiKey) {
-    throw new Error('ALCHEMY_API_KEY is not set');
-  }
-  
   const allBalances: TokenBalance[] = [];
   const chains = Object.keys(RPC_URLS) as ChainType[];
   
   // fetch balances from all chains concurrently
   const promises = chains.flatMap(chain => {
-    const provider = new ethers.providers.JsonRpcProvider(`${RPC_URLS[chain]}${apiKey}`);
-    
-    // get native token balance
-    const nativePromise = getNativeBalance(provider, address, chain);
-    
-    // get token balances
-    const tokenPromises = Object.entries(TOKEN_ADDRESSES[chain]).map(([tokenSymbol, tokenAddress]) => {
-      return getTokenBalance(
-        provider, 
-        address, 
-        tokenAddress, 
-        tokenSymbol as 'USDC' | 'LINK', 
-        chain
-      );
-    });
-    
-    return [nativePromise, ...tokenPromises];
+    try {
+      const provider = getProvider(chain);
+      
+      // get native token balance
+      const nativePromise = getNativeBalance(provider, address, chain);
+      
+      // get token balances
+      const tokenPromises = Object.entries(TOKEN_ADDRESSES[chain]).map(([tokenSymbol, tokenAddress]) => {
+        return getTokenBalance(
+          provider, 
+          address, 
+          tokenAddress, 
+          tokenSymbol as 'USDC' | 'LINK', 
+          chain
+        );
+      });
+      
+      return [nativePromise, ...tokenPromises];
+    } catch (error) {
+      console.error(`Error setting up provider for ${chain}:`, error);
+      return [];
+    }
   });
   
   // resolve all promises
-  const results = await Promise.all(promises);
+  const results = await Promise.allSettled(promises);
   
-  // filter out null results (failed requests)
-  const validBalances = results.filter(balance => balance !== null) as TokenBalance[];
-  
-  if (validBalances.length === 0) {
-    throw new Error('Could not retrieve any balances');
-  }
+  // filter out rejected results and null values
+  const validBalances = results
+    .filter((result): result is PromiseFulfilledResult<TokenBalance | null> => 
+      result.status === 'fulfilled' && result.value !== null)
+    .map(result => result.value) as TokenBalance[];
   
   // prepare response
   const response: BalanceResponse = {
     address,
-    balances: validBalances,
-    hasNonZeroBalances: validBalances.some(balance => parseFloat(balance.balance) > 0)
+    balances: validBalances
   };
   
   // cache the result

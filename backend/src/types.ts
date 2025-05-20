@@ -16,7 +16,6 @@ export interface TokenBalance {
 export interface BalanceResponse {
   address: string;
   balances: TokenBalance[];
-  hasNonZeroBalances?: boolean;
 }
 
 // cache item structure
