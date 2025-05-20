@@ -1,6 +1,6 @@
 import { BalanceResponse, ChainType } from "../utils/types";
-import ChainLogo from "./ChainLogo";
-import TokenLogo from "./TokenLogo";
+import { ChainLogo } from "./ChainLogo";
+import { TokenLogo } from "./TokenLogo";
 
 interface BalanceResultsProps {
   data: BalanceResponse;
@@ -15,7 +15,7 @@ const chainNames = {
   bnb: "BNB Chain",
 };
 
-export default function BalanceResults({ data }: BalanceResultsProps) {
+export const BalanceResults = ({ data }: BalanceResultsProps) => {
   // filter out zero balances
   const filteredBalances = data.balances.filter((balance) => {
     const numBalance = parseFloat(balance.balance);
@@ -146,13 +146,7 @@ export default function BalanceResults({ data }: BalanceResultsProps) {
               ([chain, balances], chainIndex) => (
                 <div
                   key={chain}
-                  className="glass-card rounded-xl p-4 sm:p-5 border border-gray-700/30"
-                  style={{
-                    animation: `fadeIn 0.3s ease forwards ${
-                      0.1 + chainIndex * 0.1
-                    }s`,
-                    opacity: 0,
-                  }}
+                  className={`glass-card rounded-xl p-4 sm:p-5 border border-gray-700/30 animate-fade-in delay-${chainIndex}`}
                 >
                   <div className="flex items-center mb-4">
                     <ChainLogo chain={chain as ChainType} />
@@ -165,16 +159,10 @@ export default function BalanceResults({ data }: BalanceResultsProps) {
                   </div>
 
                   <div className="space-y-3">
-                    {balances.map((balance, balanceIndex) => (
+                    {balances.map((balance) => (
                       <div
                         key={`${chain}-${balance.token}`}
-                        className="token-badge hover:scale-[1.02] transition-all duration-200"
-                        style={{
-                          animation: `fadeIn 0.2s ease forwards ${
-                            0.2 + balanceIndex * 0.05
-                          }s`,
-                          opacity: 0,
-                        }}
+                        className="token-badge hover:scale-[1.02] transition-all duration-200 animate-fade-in"
                       >
                         <div className="flex items-center justify-between w-full">
                           <div className="flex items-center">
@@ -206,4 +194,4 @@ export default function BalanceResults({ data }: BalanceResultsProps) {
       )}
     </div>
   );
-}
+};

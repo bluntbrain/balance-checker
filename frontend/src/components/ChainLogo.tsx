@@ -6,7 +6,7 @@ interface ChainLogoProps {
   size?: number | "small";
 }
 
-export default function ChainLogo({ chain, size = 24 }: ChainLogoProps) {
+export const ChainLogo = ({ chain, size = 24 }: ChainLogoProps) => {
   const logoMap = {
     ethereum: "/images/chains/ethereum.svg",
     polygon: "/images/chains/polygon.svg",
@@ -34,4 +34,4 @@ export default function ChainLogo({ chain, size = 24 }: ChainLogoProps) {
       />
     </div>
   );
-}
+};

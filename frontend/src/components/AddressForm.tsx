@@ -6,9 +6,26 @@ interface AddressFormProps {
   isLoading: boolean;
 }
 
-export default function AddressForm({ onSubmit, isLoading }: AddressFormProps) {
+export const AddressForm = ({ onSubmit, isLoading }: AddressFormProps) => {
   const [address, setAddress] = useState<string>("");
   const [error, setError] = useState<string | null>(null);
+
+  // validate and submit address
+  const validateAndSubmit = (value: string) => {
+    if (!value.trim()) {
+      setError("Address is required");
+      return false;
+    }
+
+    if (!isValidEthereumAddress(value)) {
+      setError("Invalid Ethereum address");
+      return false;
+    }
+
+    setError(null);
+    onSubmit(value);
+    return true;
+  };
 
   // handle input change with auto-submission
   const handleInputChange = (value: string) => {
@@ -37,20 +54,7 @@ export default function AddressForm({ onSubmit, isLoading }: AddressFormProps) {
   // handle form submission
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
-
-    // validate address
-    if (!address.trim()) {
-      setError("Address is required");
-      return;
-    }
-
-    if (!isValidEthereumAddress(address)) {
-      setError("Invalid Ethereum address");
-      return;
-    }
-
-    setError(null);
-    onSubmit(address);
+    validateAndSubmit(address);
   };
 
   return (
@@ -141,4 +145,4 @@ export default function AddressForm({ onSubmit, isLoading }: AddressFormProps) {
       </form>
     </div>
   );
-}
+};

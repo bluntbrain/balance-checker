@@ -6,7 +6,7 @@ interface TokenLogoProps {
   size?: number;
 }
 
-export default function TokenLogo({ token, size = 24 }: TokenLogoProps) {
+export const TokenLogo = ({ token, size = 24 }: TokenLogoProps) => {
   const logoMap = {
     ETH: "/images/tokens/eth.svg",
     USDC: "/images/tokens/usdc.svg",
@@ -30,4 +30,4 @@ export default function TokenLogo({ token, size = 24 }: TokenLogoProps) {
       />
     </div>
   );
-}
+};
